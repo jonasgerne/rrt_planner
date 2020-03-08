@@ -1,0 +1,10 @@
+# request
+geometry_msgs/PoseStamped start_pose
+geometry_msgs/PoseStamped goal_pose
+geometry_msgs/Vector3 bounding_box
+float64 max_planner_time
+---
+# True on success, false on planning failure
+bool success
+nav_msgs/Path path
+float64 path_length

@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>rrt_planner</name>
+  <version>0.0.0</version>
+  <description>
+    Global planning with voxblox.
+  </description>
+
+  <author email="author@todo.todo">Author</author>
+
+  <maintainer email="maintainer@todo.todo">Maintainer</maintainer>
+
+  <license>BSD</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>catkin_simple</buildtool_depend>
+
+  <depend>ompl</depend>
+  <depend>roscpp</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>rrt_planner_msgs</depend>
+  <depend>mesh_drive_proc</depend>
+  <depend>tf</depend>
+  <depend>visualization_msgs</depend>
+  <depend>voxblox_ros</depend>
+</package>
