@@ -1,3 +1,3 @@
 *.pickle
 *.ipynb
-/rrt_planner/.idea
+/.idea

@@ -17,13 +17,13 @@ OmplRrt::OmplRrt(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private) :
     nh_private_.param("search_radius_nn", search_radius_, 0.25f);
 }
 
-bool OmplRrt::getPathBetweenWaypoints(const geometry_msgs::Pose &start, const geometry_msgs::Pose &goal, std::vector<geometry_msgs::Pose> &solution, double seconds_to_plan) {
+bool OmplRrt::getPathBetweenWaypoints(const geometry_msgs::Pose &start, const geometry_msgs::Pose &goal, std::vector<geometry_msgs::Pose> &solution, double &reeds_shepp_length, double seconds_to_plan) {
     num_seconds_to_plan_ = seconds_to_plan;
-    return getPathBetweenWaypoints(start, goal, solution);
+    return getPathBetweenWaypoints(start, goal, solution, reeds_shepp_length);
 }
 
 bool OmplRrt::getPathBetweenWaypoints(const geometry_msgs::Pose &start, const geometry_msgs::Pose &goal,
-                                      std::vector<geometry_msgs::Pose> &solution) {
+                                      std::vector<geometry_msgs::Pose> &solution, double &reeds_shepp_length) {
     setupFromStartAndGoal(start, goal);
 
     if (problem_setup_->solve(num_seconds_to_plan_)) {

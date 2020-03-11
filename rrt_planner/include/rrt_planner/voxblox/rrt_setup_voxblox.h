@@ -14,7 +14,7 @@ public:
 
     void setTsdfVoxbloxCollisionChecking(voxblox::Layer<voxblox::TsdfVoxel>* tsdf_layer, float current_height) {
         std::shared_ptr<TsdfVoxbloxValidityCheckerOBB> validity_checker(
-                new TsdfVoxbloxValidityCheckerOBB(getSpaceInformation(), tsdf_layer, cloud_, current_height, boundingbox_, carconfig_, search_radius_));
+                new TsdfVoxbloxValidityCheckerOBB(getSpaceInformation(), tsdf_layer, cloud_, current_height, boundingbox_, carconfig_, valconfig_));
 
         setStateValidityChecker(ompl::base::StateValidityCheckerPtr(validity_checker));
 //        si_->setMotionValidator(

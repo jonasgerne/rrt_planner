@@ -12,16 +12,16 @@
     <param name="trust_approx_solution" value="true" />
     <param name="publish_traversable" value="true" />
     <param name="verbose" value="true" />
-    <param name="bb_dim_x" value="5.0" />
-    <param name="bb_dim_y" value="2.2" />
-    <param name="bb_dim_z" value="1.4" />
+    <param name="bb_dim_x" value="4.9" />
+    <param name="bb_dim_y" value="2.41" />
+    <param name="bb_dim_z" value="1.15" />
     <param name="reedsshepp" value="true"/>
     <param name="turning_radius_rs" value="11.0" />
     <param name="simplify_solution" value="true" />
     <param name="distance_between_poses" value="0.5" />
     <param name="search_radius_nn" value="0.225" />
-    <param name="search_radius_nn" value="0.225" />
-    <param name="clearance" value="1.0" />
+    <param name="clearance" value="0.4" />
+    <param name="ratio_traversables" value="0.5" />
   </node>
 
 </launch>

@@ -33,8 +33,8 @@ public:
     void setBounds(const Eigen::Vector3d& lower_bound,
                    const Eigen::Vector3d& upper_bound);
 
-    bool getPathBetweenWaypoints(const geometry_msgs::Pose& start, const geometry_msgs::Pose& goal, std::vector<geometry_msgs::Pose>& solution);
-    bool getPathBetweenWaypoints(const geometry_msgs::Pose& start, const geometry_msgs::Pose& goal, std::vector<geometry_msgs::Pose>& solution, double seconds_to_plan);
+    bool getPathBetweenWaypoints(const geometry_msgs::Pose& start, const geometry_msgs::Pose& goal, std::vector<geometry_msgs::Pose>& solution, double& reeds_shepp_length);
+    bool getPathBetweenWaypoints(const geometry_msgs::Pose& start, const geometry_msgs::Pose& goal, std::vector<geometry_msgs::Pose>& solution, double& reeds_shepp_length, double seconds_to_plan);
 
     void solutionPathToTrajectoryPoints(ompl::geometric::PathGeometric& path, std::vector<geometry_msgs::Pose>* trajectory_points) const;
 

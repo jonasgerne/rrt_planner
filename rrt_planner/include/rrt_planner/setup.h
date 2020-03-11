@@ -147,6 +147,13 @@ public:
         carconfig_.wheelbase = wheelbase;
     }
 
+    void setValConfig(float ratio_trav, float radius, float car_angle_delta, bool debug_fcl = false){
+        valconfig_.ratio_trav = ratio_trav;
+        valconfig_.radius = radius;
+        valconfig_.car_angle_delta = std::cos(car_angle_delta * M_PI / 180.0f);
+        valconfig_.debug_fcl = debug_fcl;
+    }
+
     float getBbDimX() const {
         return boundingbox_.dim_x;
     }
@@ -171,6 +178,7 @@ public:
 protected:
     BBConfig boundingbox_;
     CarConfig carconfig_;
+    ValConfig valconfig_;
     // radius for nearest neighbor search in the point cloud
     float search_radius_;
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_;

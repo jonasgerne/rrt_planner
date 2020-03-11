@@ -26,8 +26,15 @@ OmplRrt(nh, nh_private)
     float track = 1.58f;
     nh_private_.getParam("track", track);
 
-    problem_setup_->setCarConfig(clearance, wheelbase, track);
+    float ratio_trav;
+    nh_private_.param("ratio_traversables", ratio_trav, 0.9f);
+    bool debug_fcl;
+    nh_private_.param("debug_fcl", debug_fcl, false);
+    float car_angle_delta;
+    nh_private_.param("car_angle_delta_deg", car_angle_delta, 10.0f);
 
+    problem_setup_->setCarConfig(clearance, wheelbase, track);
+    problem_setup_->setValConfig(ratio_trav, search_radius_, car_angle_delta, debug_fcl);
 }
 
 void VoxbloxOmplRrt::setTsdfLayer(

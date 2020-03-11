@@ -28,13 +28,8 @@ bool MeshRrtPlanner::plannerServiceCallback(
         return false;
     }
 
-    // Figure out map bounds!
-    //computeMapBounds(&lower_bound_, &upper_bound_);
-    // DEBUG: decrease bounds to small area
-    lower_bound_.x() = -204.0;
-    lower_bound_.y() = 196.103;
-    upper_bound_.x() = -195.95;
-    upper_bound_.y() = 228.0;
+    // calculate map bounds
+    computeMapBounds(&lower_bound_, &upper_bound_);
 
     ROS_INFO_STREAM("Map bounds: " << lower_bound_.transpose() << " to "
                                    << upper_bound_.transpose() << " size: "
@@ -64,13 +59,14 @@ bool MeshRrtPlanner::plannerServiceCallback(
     std::vector<geometry_msgs::Pose> waypoints;
 
     Timer rrtstar_timer("plan/rrt_star");
-    bool success = rrt_.getPathBetweenWaypoints(start_pose, goal_pose, waypoints, request.max_planner_time);
+    double reeds_shepp_length = 0.0;
+    bool success = rrt_.getPathBetweenWaypoints(start_pose, goal_pose, waypoints, reeds_shepp_length, request.max_planner_time);
     rrtstar_timer.Stop();
 
-    double path_length = computePathLength(waypoints);
+    // double path_length = computePathLength(waypoints);
     int num_vertices = waypoints.size();
     ROS_INFO("RRT* Success? %d Path length: %f Vertices: %d", success,
-             path_length, num_vertices);
+             reeds_shepp_length, num_vertices);
 
     if (!success) {
         ROS_INFO_STREAM("All timings: "
@@ -79,16 +75,6 @@ bool MeshRrtPlanner::plannerServiceCallback(
         response.success = success;
         return false;
     }
-
-    /*visualization_msgs::MarkerArray marker_array;
-    if (visualize_) {
-        marker_array.markers.push_back(createMarkerForPath(
-                waypoints, frame_id_, vis_colors::Color::Orange(), "rrt_star",
-                0.075));
-        marker_array.markers.push_back(createMarkerForWaypoints(
-                waypoints, frame_id_, vis_colors::Color::Green(),
-                "rrt_star_waypoints", 0.15));
-    }*/
 
     nav_msgs::Path path;
     convertToNavMsg(waypoints, path);
@@ -100,7 +86,7 @@ bool MeshRrtPlanner::plannerServiceCallback(
 
     response.success = success;
     response.path = path;
-    response.path_length = static_cast<float>(path_length);
+    response.path_length = static_cast<float>(reeds_shepp_length);
 
 
     ROS_INFO_STREAM("All timings: "

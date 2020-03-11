@@ -45,12 +45,9 @@ public:
 
     void setFCLCollisionChecking(float current_height) {
         std::shared_ptr<FCLValidityChecker> validity_checker(
-                new FCLValidityChecker(getSpaceInformation(), env_, cloud_, current_height, boundingbox_, carconfig_, search_radius_));
+                new FCLValidityChecker(getSpaceInformation(), env_, cloud_, current_height, boundingbox_, carconfig_, valconfig_));
 
         setStateValidityChecker(ompl::base::StateValidityCheckerPtr(validity_checker));
-//        si_->setMotionValidator(
-//                ompl::base::MotionValidatorPtr(new VoxbloxMotionValidator<voxblox::TsdfVoxel>(
-//                        getSpaceInformation(), validity_checker)));
     }
 
 protected:

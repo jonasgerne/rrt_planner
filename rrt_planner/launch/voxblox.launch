@@ -27,7 +27,8 @@
     <param name="distance_between_poses" value="0.5" />
     <param name="search_radius_nn" value="0.225" />
     <param name="search_radius_nn" value="0.225" />
-     <param name="clearance" value="0.6" />
+     <param name="clearance" value="0.4" />
+     <param name="car_angle_delta_deg" value="20.0" />
   </node>
 
 </launch>
