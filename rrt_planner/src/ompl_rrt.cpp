@@ -15,6 +15,7 @@ OmplRrt::OmplRrt(const ros::NodeHandle &nh, const ros::NodeHandle &nh_private) :
     nh_private_.param("simplify_solution", simplify_solution_, false);
     nh_private_.param("distance_between_poses", distance_between_poses_, 0.5);
     nh_private_.param("search_radius_nn", search_radius_, 0.25f);
+    nh_private_.param("state_val_res_factor", state_validity_res_, 2.0);
 }
 
 bool OmplRrt::getPathBetweenWaypoints(const geometry_msgs::Pose &start, const geometry_msgs::Pose &goal, std::vector<geometry_msgs::Pose> &solution, double &reeds_shepp_length, double seconds_to_plan) {
@@ -35,6 +36,7 @@ bool OmplRrt::getPathBetweenWaypoints(const geometry_msgs::Pose &start, const ge
             if (verbose_) {
                 problem_setup_->getSolutionPath().printAsMatrix(std::cout);
             }
+            reeds_shepp_length = problem_setup_->getSolutionPath().length();
         } else {
             ROS_WARN("OMPL planning failed.");
             return false;

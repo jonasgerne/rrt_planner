@@ -1,12 +1,13 @@
 <launch>
-  <arg name="voxblox_path" default="/home/jonasgerstner/Downloads/vxblx/carla_gt" />
+  <!--<arg name="voxblox_path" default="/data/drive1/Experiments/FuelStopScene/voxblox_lidar_10cm.vxblx" />-->
+  <arg name="voxblox_path" default=""/>
   <arg name="frame_id" default="world" />
 
   <node name="rrt_planner" pkg="rrt_planner" type="rrt_planner_voxel_node" output="screen">
     <remap from="/rrt_planner/pointcloud_traversable" to="/output" />
+    <remap from="/voxblox_node/tsdf_map_in" to="/voxblox_node/tsdf_map_out" />
     <param name="voxblox_path" value="$(arg voxblox_path)" />
     <param name="visualize" value="true" />
-    <param name="robot_radius" value="0.5" />
     <param name="tsdf_voxel_size" value="0.25" />
     <param name="tsdf_voxels_per_side" value="16" />
     <param name="update_mesh_every_n_sec" value="0.0" />
@@ -18,17 +19,21 @@
     <param name="split_at_collisions" value="true" />
     <param name="optimize_time" value="true" />
     <param name="verbose" value="true" />
-    <param name="bb_dim_x" value="5.0" />
-    <param name="bb_dim_y" value="2.5" />
-    <param name="bb_dim_z" value="0.5" />
+    <param name="bb_dim_x" value="5.2179" />
+    <param name="bb_dim_y" value="2.8" />
+    <param name="bb_dim_z" value="1.0" />
     <param name="reedsshepp" value="true"/>
     <param name="turning_radius_rs" value="11.0" />
     <param name="simplify_solution" value="true" />
     <param name="distance_between_poses" value="0.5" />
     <param name="search_radius_nn" value="0.225" />
-    <param name="search_radius_nn" value="0.225" />
      <param name="clearance" value="0.4" />
      <param name="car_angle_delta_deg" value="20.0" />
+     <param name="ratio_traversables" value="0.8" />
+     <param name="relax_neighbor_search" value="true" />
+      <param name="state_validity_res" value="4.0" />
+      <param name="wheelbase" value="2.99" />
+          <param name="track" value="1.38" />
   </node>
 
 </launch>

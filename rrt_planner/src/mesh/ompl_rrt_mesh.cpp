@@ -28,11 +28,13 @@ OmplRrt(nh, nh_private)
     nh_private_.param("ratio_traversables", ratio_trav, 0.9f);
     bool debug_fcl;
     nh_private_.param("debug_fcl", debug_fcl, false);
+    bool relax_neighbor_search;
+    nh_private_.param("relax_neighbor_search", relax_neighbor_search, false);
     float car_angle_delta;
     nh_private_.param("car_angle_delta_deg", car_angle_delta, 10.0f);
 
     problem_setup_->setCarConfig(clearance, wheelbase, track);
-    problem_setup_->setValConfig(ratio_trav, search_radius_, car_angle_delta, debug_fcl);
+    problem_setup_->setValConfig(ratio_trav, search_radius_, car_angle_delta, relax_neighbor_search, debug_fcl);
 
     mesh_sub_ = nh_.subscribe("input_mesh", 1, &MeshOmplRrt::mesh_cb, this);
 }
@@ -48,7 +50,7 @@ void MeshOmplRrt::setupProblem(float current_height = 0.0f) {
     // cast pointer to derived class to keep interfaces clean
     std::dynamic_pointer_cast<MeshRrtSetup>(problem_setup_)->setFCLCollisionChecking(current_height);
 
-    problem_setup_->setRrtStar();
+    problem_setup_->setInformedRrtStar();
     problem_setup_->setDefaultObjective();
 
     if (lower_bound_ != upper_bound_) {
@@ -71,7 +73,7 @@ void MeshOmplRrt::setupProblem(float current_height = 0.0f) {
     if ((upper_bound_ - lower_bound_).norm() > 1e-3) {
         // If bounds are set, set this to approximately one voxel.
         validity_checking_resolution =
-                0.25 / (upper_bound_ - lower_bound_).norm() / 2.0;
+                0.25 / (upper_bound_ - lower_bound_).norm() / state_validity_res_;
     }
     problem_setup_->setStateValidityCheckingResolution(validity_checking_resolution);
 }

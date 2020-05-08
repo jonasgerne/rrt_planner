@@ -35,7 +35,8 @@ public:
             ratio_trav_(valconfig.ratio_trav),
             bb_dim_z_(boundingbox.dim_z),
             debug_fcl_(valconfig.debug_fcl),
-            car_angle_delta_(valconfig.car_angle_delta) {
+            car_angle_delta_(valconfig.car_angle_delta),
+            relax_neighbor_search_(valconfig.relax_neighbor_search){
         // set up the collision geometry for the vehicle, the bounding box is centered at zero
         rob_geom_.reset(new fcl::Boxf(boundingbox.dim_x, boundingbox.dim_y, boundingbox.dim_z));
         tire_offsets_ << 0.0, wheelbase_, wheelbase_, 0.0, track_ / 2.0,
@@ -166,18 +167,29 @@ public:
 
         uint8_t r_val = 255;
 
-        if (kdtree.nearestKSearch(search_point, 1, point_idx_radius_search, point_radius_squared_dist) > 0) {
-            const auto &nearest_point = kdtree.getInputCloud()->points[point_idx_radius_search[0]];
-            if (nearest_point.r == r_val)
-                return false;
+        int k = relax_neighbor_search_ ? 5 : 1;
+
+        if (kdtree.nearestKSearch(search_point, k, point_idx_radius_search, point_radius_squared_dist) > 0) {
+            pcl::PointXYZRGBNormal nearest_point;
+            for (int i = 0; i < k; ++i) {
+                nearest_point = kdtree.getInputCloud()->points[point_idx_radius_search[i]];
+                if (nearest_point.g == r_val)
+                    break;
+                else if (nearest_point.r == r_val && i < k - 1) {
+                    continue;}
+                else
+                    return false;
+            }
+
             // check if nearest neighbor of sampled pose is within certain bounds
             Eigen::Vector3f transform = nearest_point.getVector3fMap() - search_point.getVector3fMap();
             if (std::abs(nearest_point.x - search_point.x) > radius_ ||
-                std::abs(nearest_point.y - search_point.y) > radius_)
+                std::abs(nearest_point.y - search_point.y) > radius_) {
                 return false;
+            }
 
             // project sample point to local surface
-            auto &n = nearest_point.getNormalVector3fMap();
+            const auto &n = nearest_point.getNormalVector3fMap();
             auto new_point = search_point.getVector3fMap() +
                              (transform.dot(n) /
                               Eigen::Vector3f::UnitZ().dot(n)) * Eigen::Vector3f::UnitZ();
@@ -195,8 +207,8 @@ public:
                         ++non_trav;
                     }
                 }
-                if (1.0f - ((float) non_trav / point_idx_radius_search.size()) < ratio_trav_)
-                    return false;
+                if ((1.0f - ((float) non_trav / point_idx_radius_search.size())) < ratio_trav_){
+                    return false;}
             } else {
                 // no neighbors near sampled point
                 return false;
@@ -247,8 +259,10 @@ protected:
     float radius_;
     float bb_dim_z_;
     float car_angle_delta_;
+    bool relax_neighbor_search_;
 
     bool debug_fcl_;
+
 
     float ratio_trav_;
 

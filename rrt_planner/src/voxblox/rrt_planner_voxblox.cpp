@@ -10,15 +10,21 @@ VoxbloxRrtPlanner::VoxbloxRrtPlanner(const ros::NodeHandle &nh, const ros::NodeH
         RrtPlanner(nh, nh_private),
         voxblox_server_(nh_, nh_private_),
         rrt_(nh_, nh_private_) {
-
+    voxblox::TsdfMap::Config config = voxblox::getTsdfMapConfigFromRosParam(nh_private);
+    voxblox_server_.getTsdfMapPtr().reset(new voxblox::TsdfMap(config));
+    tsdf_layer_.reset(voxblox_server_.getTsdfMapPtr()->getTsdfLayerPtr());
     planner_srv_ = nh_private_.advertiseService(
             "plan", &VoxbloxRrtPlanner::plannerServiceCallback, this);
 
     nh_private_.param("voxblox_path", input_filepath_, input_filepath_);
 
+    if (input_filepath_.empty())
+        tsdf_sub_ = nh_private_.subscribe("/voxblox_node/tsdf_map_in", 1, &VoxbloxRrtPlanner::tsdfMapCallback, this);
+    else {
+        loadTsdfLayer();
+        loadVoxbloxMap();
+    }
 
-    loadTsdfLayer();
-    loadVoxbloxMap();
 
     rrt_.setOptimistic(true);
 
@@ -28,9 +34,23 @@ VoxbloxRrtPlanner::VoxbloxRrtPlanner(const ros::NodeHandle &nh, const ros::NodeH
     if (visualize_) {
         voxblox_server_.generateMeshWithPCL();
     }
-
-
 }
+
+void VoxbloxRrtPlanner::tsdfMapCallback(const voxblox_msgs::Layer& layer_msg) {
+    voxblox::timing::Timer receive_map_timer("map/receive_tsdf");
+
+    bool success = voxblox::deserializeMsgToLayer<voxblox::TsdfVoxel>(layer_msg, voxblox_server_.getTsdfMapPtr()->getTsdfLayerPtr());
+
+    if (!success) {
+        ROS_INFO("Got an invalid TSDF map message!");
+    } else {
+        ROS_INFO("Got an TSDF map from ROS topic!");
+        if (visualize_) {
+            voxblox_server_.generateMeshWithPCL();
+        }
+    }
+}
+
 
 bool VoxbloxRrtPlanner::loadTsdfLayer() {
     if (!input_filepath_.empty()) {
@@ -50,15 +70,15 @@ bool VoxbloxRrtPlanner::loadVoxbloxMap() {
             ROS_ERROR("Couldn't load ESDF map!");
 
             // Check if the TSDF layer is non-empty...
-            if (tsdf_layer_->getNumberOfAllocatedBlocks() > 0) {
-                ROS_INFO("Generating ESDF layer from TSDF.");
-                // If so, generate the ESDF layer!
-
-                const bool full_euclidean_distance = true;
-                voxblox_server_.updateEsdfBatch(full_euclidean_distance);
-            } else {
-                ROS_ERROR("TSDF map also empty! Check voxel size!");
-            }
+//            if (tsdf_layer_->getNumberOfAllocatedBlocks() > 0) {
+//                ROS_INFO("Generating ESDF layer from TSDF.");
+//                // If so, generate the ESDF layer!
+//
+//                const bool full_euclidean_distance = true;
+//                voxblox_server_.updateEsdfBatch(full_euclidean_distance);
+//            } else {
+//                ROS_ERROR("TSDF map also empty! Check voxel size!");
+//            }
         }
     }
 }

@@ -69,6 +69,7 @@ protected:
     float search_radius_;
 
     double distance_between_poses_;
+    double state_validity_res_;
 
     pcl::PointCloud<pcl::PointXYZRGBNormal>::Ptr cloud_;
 };

@@ -129,10 +129,19 @@ public:
 
         uint8_t r_val = 255;
 
-        if (kdtree.nearestKSearch(search_point, 1, point_idx_radius_search, point_radius_squared_dist) > 0) {
-            const auto &nearest_point = kdtree.getInputCloud()->points[point_idx_radius_search[0]];
-            if (nearest_point.r == r_val)
-                return false;
+        int k = relax_neighbor_search_ ? 5 : 1;
+
+        if (kdtree.nearestKSearch(search_point, k, point_idx_radius_search, point_radius_squared_dist) > 0) {
+            pcl::PointXYZRGBNormal nearest_point;
+            for (int i = 0; i < k; ++i) {
+                nearest_point = kdtree.getInputCloud()->points[point_idx_radius_search[i]];
+                if (nearest_point.g == r_val)
+                    break;
+                else if (nearest_point.r == r_val && i < k - 1) {
+                    continue;}
+                else
+                    return false;
+            }
             // check if nearest neighbor of sampled pose is within certain bounds
             Eigen::Vector3f transform = nearest_point.getVector3fMap() - search_point.getVector3fMap();
             if (std::abs(nearest_point.x - search_point.x) > radius_ ||
@@ -140,7 +149,7 @@ public:
                 return false;
 
             // project sample point to local surface
-            auto &n = nearest_point.getNormalVector3fMap();
+            const auto &n = nearest_point.getNormalVector3fMap();
             auto new_point = search_point.getVector3fMap() +
                              (transform.dot(n) /
                               Eigen::Vector3f::UnitZ().dot(n)) * Eigen::Vector3f::UnitZ();
@@ -336,6 +345,7 @@ protected:
     float radius_;
     float car_angle_delta_;
     float ratio_trav_;
+    bool relax_neighbor_search_;
 
     Eigen::Matrix<double, 3, 4> tire_offsets_;
     Eigen::Transform<float, 3, Eigen::Affine> bb_center_;

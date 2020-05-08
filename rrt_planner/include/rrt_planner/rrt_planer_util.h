@@ -23,5 +23,6 @@ struct ValConfig{
     float ratio_trav;
     float car_angle_delta;
     bool debug_fcl;
+    bool relax_neighbor_search;
 };
 #endif //RRT_PLANNER_RRT_PLANER_UTIL_H

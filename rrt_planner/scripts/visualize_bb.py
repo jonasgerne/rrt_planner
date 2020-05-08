@@ -8,14 +8,14 @@ import tf
 if __name__ == '__main__':
     rospy.init_node("vis_box")
 
-    marker_pub = rospy.Publisher('bb_viz', Marker, queue_size=1)
-    pose_pub = rospy.Publisher('bb_pose', PoseStamped, queue_size=1)
-    bounding = [5.0, 2.2, 1.4]
+    marker_pub = rospy.Publisher('bb_viz', Marker, queue_size=1, latch=True)
+    pose_pub = rospy.Publisher('bb_pose', PoseStamped, queue_size=1, latch=True)
+    bounding = [5.0, 2.2, 1.0]
 
-    input = """0.00985353   -0.569643   -0.821833    -198.186
- 0.00490808   -0.821835    0.569704      210.28
-  -0.999939 -0.00964722 -0.00530212    0.985281
-4.58323e-41           0           0           0"""
+    input = """0.9992003 -0.0399840  0.0000000   -81.830
+       0.0399840  0.9992003  0.0000000    -120.852
+   0.0000000  0.0000000  1.0000000   0.729543
+         0          0          0          1"""
     mat = np.asarray(input.split()).reshape(4, 4)
     mat = mat.astype(float)
     msg = Marker()
@@ -35,9 +35,9 @@ if __name__ == '__main__':
     msg.scale.x = bounding[0]
     msg.scale.y = bounding[1]
     msg.scale.z = bounding[2]
-    msg.color.a = 0.5
-    msg.color.r = 1.0
-    msg.color.g = 0.0
+    msg.color.a = 0.65
+    msg.color.r = 0.0
+    msg.color.g = 1.0
     msg.color.b = 0.0
 
     pose = PoseStamped()

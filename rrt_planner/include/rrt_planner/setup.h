@@ -5,6 +5,7 @@
 #define RRT_PLANNER_SETUP_H
 #include <ompl/base/objectives/PathLengthOptimizationObjective.h>
 #include <ompl/base/spaces/ReedsSheppStateSpace.h>
+#include <ompl/base/spaces/DubinsStateSpace.h>
 #include <ompl/geometric/SimpleSetup.h>
 #include <ompl/geometric/planners/rrt/InformedRRTstar.h>
 #include <ompl/geometric/planners/rrt/RRTConnect.h>
@@ -147,11 +148,12 @@ public:
         carconfig_.wheelbase = wheelbase;
     }
 
-    void setValConfig(float ratio_trav, float radius, float car_angle_delta, bool debug_fcl = false){
+    void setValConfig(float ratio_trav, float radius, float car_angle_delta, bool relax_neighbor_search, bool debug_fcl = false){
         valconfig_.ratio_trav = ratio_trav;
         valconfig_.radius = radius;
         valconfig_.car_angle_delta = std::cos(car_angle_delta * M_PI / 180.0f);
         valconfig_.debug_fcl = debug_fcl;
+        valconfig_.relax_neighbor_search = relax_neighbor_search;
     }
 
     float getBbDimX() const {

@@ -9,6 +9,7 @@
 #include <mav_msgs/conversions.h>
 #include <minkindr_conversions/kindr_msg.h>
 #include <voxblox_ros/esdf_server.h>
+#include <voxblox_ros/ros_params.h>
 
 #include <rrt_planner_msgs/PlannerService.h>
 #include <rrt_planner/rrt_planner.h>
@@ -30,6 +31,8 @@ public:
     bool checkPathForCollisions(const mav_msgs::EigenTrajectoryPointVector &path,
                                 double *t) const;
 
+    void tsdfMapCallback(const voxblox_msgs::Layer& layer_msg);
+
     bool loadTsdfLayer();
 
     bool loadVoxbloxMap();
@@ -46,14 +49,17 @@ private:
     bool checkStartAndGoalFree(const Eigen::Vector3d &start_pos,
                                const Eigen::Vector3d &goal_pos) const;
 
+    ros::Subscriber tsdf_sub_;
+
     std::string input_filepath_;
 
     // Map
-    voxblox::EsdfServer voxblox_server_;
+    //voxblox::EsdfServer voxblox_server_;
+    voxblox::TsdfServer voxblox_server_;
     // Shortcuts to the maps:
+    //std::shared_ptr<voxblox::TsdfMap> tsdf_map_;
     voxblox::Layer<voxblox::TsdfVoxel>::Ptr tsdf_layer_;
     voxblox::EsdfMap::Ptr esdf_map_;
-    voxblox::TsdfMap::Ptr tsdf_map_;
 
     double voxel_size_;  // Cache the size of the voxels used by the map.
 
